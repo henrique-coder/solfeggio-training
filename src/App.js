@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { HashRouter as Router } from 'react-router-dom';
 import Vex from 'vexflow';
 import './App.css';
 
@@ -196,38 +197,40 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <h1>Solfeggio Training</h1>
-      <div id="score">Score: {score}</div>
-      <div ref={staffRef}></div>
-      <div id="buttons">
-        {notationData[notation].notation.map(note => (
-          <button key={note} onClick={() => checkAnswer(note)}>{note}</button>
-        ))}
-      </div>
-      <div id="options">
-        <select value={notation} onChange={(e) => setNotation(e.target.value)}>
-          {Object.entries(notationData).map(([key, data]) => (
-            <option key={key} value={key}>{data.name}</option>
+    <Router>
+      <div className="App">
+        <h1>Solfeggio Training</h1>
+        <div id="score">Score: {score}</div>
+        <div ref={staffRef}></div>
+        <div id="buttons">
+          {notationData[notation].notation.map(note => (
+            <button key={note} onClick={() => checkAnswer(note)}>{note}</button>
           ))}
-        </select>
-        <select value={clef} onChange={(e) => setClef(e.target.value)}>
-          {Object.entries(clefData).map(([key, name]) => (
-            <option key={key} value={key}>{name}</option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <p>Adjust note range:</p>
-        <div>
-          <button onClick={() => moveNote(true, 'down')}>↓ Low</button>
-          <button onClick={() => moveNote(true, 'up')}>↑ Low</button>
-          <button onClick={() => moveNote(false, 'down')}>↓ High</button>
-          <button onClick={() => moveNote(false, 'up')}>↑ High</button>
         </div>
-        <div ref={rangeStaffRef}></div>
+        <div id="options">
+          <select value={notation} onChange={(e) => setNotation(e.target.value)}>
+            {Object.entries(notationData).map(([key, data]) => (
+              <option key={key} value={key}>{data.name}</option>
+            ))}
+          </select>
+          <select value={clef} onChange={(e) => setClef(e.target.value)}>
+            {Object.entries(clefData).map(([key, name]) => (
+              <option key={key} value={key}>{name}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <p>Adjust note range:</p>
+          <div>
+            <button onClick={() => moveNote(true, 'down')}>↓ Low</button>
+            <button onClick={() => moveNote(true, 'up')}>↑ Low</button>
+            <button onClick={() => moveNote(false, 'down')}>↓ High</button>
+            <button onClick={() => moveNote(false, 'up')}>↑ High</button>
+          </div>
+          <div ref={rangeStaffRef}></div>
+        </div>
       </div>
-    </div>
+    </Router>
   );
 }
 
