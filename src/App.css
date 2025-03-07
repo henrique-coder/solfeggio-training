@@ -1,25 +1,51 @@
 body {
-  background-color: white;
+  background-color: #f5f5f5;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
 .App {
   text-align: center;
   padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-size: 2.5rem;
+}
+
+#score {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #4a4a4a;
+  margin-bottom: 1.5rem;
 }
 
 button {
   background-color: white;
-  color: black;
+  color: #333;
   border: 1px solid #ccc;
-  padding: 10px 20px;
-  margin: 5px;
+  border-radius: 4px;
+  padding: 12px 24px;
+  margin: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 button:hover {
   transform: translateY(-3px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
+}
+
+button:active {
+  transform: translateY(-1px);
 }
 
 button.correct {
@@ -31,30 +57,103 @@ button.incorrect {
 }
 
 @keyframes correctAnimation {
-  0% {
-    background-color: white;
-  }
-  50% {
-    background-color: #90ee90;
-  }
-  100% {
-    background-color: white;
-  }
+  0% { background-color: white; }
+  50% { background-color: #90ee90; }
+  100% { background-color: white; }
 }
 
 @keyframes incorrectAnimation {
-  0% {
-    background-color: white;
-  }
-  50% {
-    background-color: #ffa07a;
-  }
-  100% {
-    background-color: white;
-  }
+  0% { background-color: white; }
+  50% { background-color: #ffa07a; }
+  100% { background-color: white; }
+}
+
+#options {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin: 20px 0;
 }
 
 select {
-  margin-top: 20px;
-  padding: 5px;
+  appearance: none;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 12px 35px 12px 15px;
+  margin: 10px 0;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23333%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px top 50%;
+  background-size: 12px auto;
+  transition: all 0.3s ease;
+}
+
+select:hover {
+  border-color: #aaa;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+select:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+div > button {
+  background-color: #f0f0f0;
+  padding: 10px 15px;
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  #score {
+    font-size: 1.5rem;
+  }
+
+  button {
+    padding: 10px 18px;
+    margin: 6px;
+    font-size: 1rem;
+  }
+
+  select {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  #options {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .App {
+    padding: 15px 10px;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  button {
+    padding: 10px 15px;
+    margin: 4px;
+    font-size: 0.9rem;
+  }
+
+  #buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 }
