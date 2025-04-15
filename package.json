@@ -1,6 +1,6 @@
 {
   "name": "solfeggio-training",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "private": true,
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
