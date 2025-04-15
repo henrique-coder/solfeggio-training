@@ -153,8 +153,8 @@ button:disabled {
 /* Correct/Incorrect button feedback */
 button.correct {
   animation: correctAnimation 0.3s ease-out;
-  border-color: #4CAF50;
-  color: #4CAF50;
+  border-color: #4caf50;
+  color: #4caf50;
 }
 button.incorrect {
   animation: incorrectAnimation 0.5s ease-out;
@@ -162,12 +162,29 @@ button.incorrect {
   color: #f44336;
 }
 @keyframes correctAnimation {
-  50% { transform: scale(1.05); background-color: #e8f5e9; }
+  50% {
+    transform: scale(1.05);
+    background-color: #e8f5e9;
+  }
 }
 @keyframes incorrectAnimation {
-  0%, 100% { transform: translateX(0); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-  20%, 40%, 60%, 80% { transform: translateX(5px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(5px);
+  }
 }
 
 /* Configuration Toggle Button (Gear Icon) */
@@ -179,7 +196,9 @@ button.incorrect {
   margin-bottom: 10px;
   cursor: pointer;
   border-radius: 50%;
-  transition: background-color 0.2s ease, transform 0.5s ease;
+  transition:
+    background-color 0.2s ease,
+    transform 0.5s ease;
   box-shadow: none;
   line-height: 0;
 }
@@ -189,9 +208,9 @@ button.incorrect {
   box-shadow: none;
 }
 #config-button:disabled {
-   background-color: transparent;
-   transform: none;
-   opacity: 0.5;
+  background-color: transparent;
+  transform: none;
+  opacity: 0.5;
 }
 #config-button svg {
   display: block;
@@ -203,8 +222,12 @@ button.incorrect {
   animation: spin 0.5s linear;
 }
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Configuration Panel (appears below gear) */
@@ -299,17 +322,17 @@ button.incorrect {
 }
 /* Button to cancel configuration mode */
 .cancel-config-button {
-   display: block;
-   margin: 15px auto 5px auto;
-   background-color: #fbe9e7;
-   border-color: #ffab91;
-   color: #d84315;
+  display: block;
+  margin: 15px auto 5px auto;
+  background-color: #fbe9e7;
+  border-color: #ffab91;
+  color: #d84315;
 }
 .cancel-config-button:hover:not(:disabled) {
-   background-color: #ffccbc;
-   border-color: #f4511e;
-   transform: none;
-   box-shadow: none;
+  background-color: #ffccbc;
+  border-color: #f4511e;
+  transform: none;
+  box-shadow: none;
 }
 
 /* General settings item layout (for selects) */
@@ -347,15 +370,14 @@ select:hover:not(:disabled) {
 }
 select:focus:not(:disabled) {
   outline: none;
-  border-color: #4CAF50;
+  border-color: #4caf50;
   box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
 }
 select:disabled {
-   background-color: #f0f0f0;
-   cursor: not-allowed;
-   opacity: 0.7;
+  background-color: #f0f0f0;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
-
 
 /* Footer GitHub Link */
 .footer-link {
@@ -393,31 +415,86 @@ select:disabled {
   border-width: 0;
 }
 
-
 /* --- Responsive Design --- */
 @media (max-width: 768px) {
-  .App { padding: 15px; margin: 15px auto; }
-  h1 { font-size: 2rem; }
-  #score { font-size: 1.5rem; }
-  #options { max-width: 90%; }
-  button { padding: 8px 16px; font-size: 0.95rem; }
-  #staveContainer, #rangeStaffContainer { min-height: 80px; }
-  .range-adjuster { max-width: 90%; padding: 10px; }
-  .config-panel { max-width: 90%; padding: 15px; }
+  .App {
+    padding: 15px;
+    margin: 15px auto;
+  }
+  h1 {
+    font-size: 2rem;
+  }
+  #score {
+    font-size: 1.5rem;
+  }
+  #options {
+    max-width: 90%;
+  }
+  button {
+    padding: 8px 16px;
+    font-size: 0.95rem;
+  }
+  #staveContainer,
+  #rangeStaffContainer {
+    min-height: 80px;
+  }
+  .range-adjuster {
+    max-width: 90%;
+    padding: 10px;
+  }
+  .config-panel {
+    max-width: 90%;
+    padding: 15px;
+  }
 }
 
 @media (max-width: 480px) {
-  .App { padding: 10px; margin: 10px auto; border-radius: 4px; }
-  h1 { font-size: 1.8rem; }
-  #score { font-size: 1.3rem; }
-  #options { gap: 6px; max-width: 100%; }
-  button { padding: 8px 12px; font-size: 0.9rem; }
-  .range-adjuster { max-width: 100%; }
-  .range-buttons { gap: 5px; }
-  .range-label { margin: 5px 5px; flex-basis: 100%; text-align: center;}
-  .config-panel { max-width: 100%; }
-  .hotkey-list li { justify-content: center; text-align: center; }
-  .hotkey-list span { flex-grow: 0; margin-bottom: 5px; }
-  .hotkey-list div { width: 100%; text-align: center; }
-  .setting-item { margin-bottom: 15px; }
+  .App {
+    padding: 10px;
+    margin: 10px auto;
+    border-radius: 4px;
+  }
+  h1 {
+    font-size: 1.8rem;
+  }
+  #score {
+    font-size: 1.3rem;
+  }
+  #options {
+    gap: 6px;
+    max-width: 100%;
+  }
+  button {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+  .range-adjuster {
+    max-width: 100%;
+  }
+  .range-buttons {
+    gap: 5px;
+  }
+  .range-label {
+    margin: 5px 5px;
+    flex-basis: 100%;
+    text-align: center;
+  }
+  .config-panel {
+    max-width: 100%;
+  }
+  .hotkey-list li {
+    justify-content: center;
+    text-align: center;
+  }
+  .hotkey-list span {
+    flex-grow: 0;
+    margin-bottom: 5px;
+  }
+  .hotkey-list div {
+    width: 100%;
+    text-align: center;
+  }
+  .setting-item {
+    margin-bottom: 15px;
+  }
 }
