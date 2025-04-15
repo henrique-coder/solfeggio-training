@@ -2,7 +2,6 @@
   "name": "solfeggio-training",
   "version": "0.0.3",
   "private": true,
-  "homepage": "https://henrique-coder.github.io/solfeggio-training",
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
