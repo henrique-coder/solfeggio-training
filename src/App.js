@@ -3,6 +3,13 @@ import { Flow } from 'vexflow';
 import { useHotkeys } from 'react-hotkeys-hook';
 import './App.css';
 
+// Importando ícones
+import { ReactComponent as SettingsIcon } from './icons/settings.svg';
+import { ReactComponent as CheckIcon } from './icons/check.svg';
+import { ReactComponent as XIcon } from './icons/x.svg';
+import { ReactComponent as ArrowUpIcon } from './icons/arrow-up.svg';
+import { ReactComponent as ArrowDownIcon } from './icons/arrow-down.svg';
+
 const VF = Flow;
 
 // --- Translations ---
@@ -101,6 +108,36 @@ const getInitialHotkeyMappings = (notes) => {
     return defaultMappings;
 };
 
+// Componentes atualizados
+const ConfigButton = ({ onClick, isOpen, isAnimating, t }) => (
+    <button
+        id="config-button"
+        onClick={onClick}
+        className={isAnimating ? 'animating' : ''}
+        aria-label={isOpen ? t('configButtonClose') : t('configButtonOpen')}
+    >
+        <SettingsIcon />
+    </button>
+);
+
+const AnswerButton = ({ note, onClick, isCorrect, isIncorrect }) => (
+    <button
+        onClick={() => onClick(note)}
+        className={`answer-button ${isCorrect ? 'correct' : ''} ${isIncorrect ? 'incorrect' : ''}`}
+    >
+        {note}
+        {isCorrect && <CheckIcon className="button-icon" />}
+        {isIncorrect && <XIcon className="button-icon" />}
+    </button>
+);
+
+const RangeButton = ({ onClick, direction, type, t }) => (
+    <button onClick={onClick} className="range-button">
+        {direction === 'up' ? <ArrowUpIcon /> : <ArrowDownIcon />}
+        <span>{type === 'low' ? t('lowNote' + direction) : t('highNote' + direction)}</span>
+    </button>
+);
+
 // --- Main App Component ---
 function App() {
     // --- State Variables ---
@@ -114,6 +151,7 @@ function App() {
     const [configuringNote, setConfiguringNote] = useState(null);
     const [showConfigPanel, setShowConfigPanel] = useState(false);
     const [gearAnimating, setGearAnimating] = useState(false);
+    const [feedback, setFeedback] = useState({ correct: null, incorrect: null });
 
     const currentNotes = useMemo(() => {
         return notationData[notation]?.notation || [];
@@ -137,7 +175,7 @@ function App() {
         const lang = notation; // Use notation state directly as language key
         let text = translations[key]?.[lang] || translations[key]?.['United States'] || key; // Fallback
         Object.entries(replacements).forEach(([placeholder, value]) => {
-            const regex = new RegExp(`\\{${placeholder}\\}`, 'g');
+            const regex = new RegExp(`\\{${placeholder}\\ }`, 'g');
             text = text.replace(regex, value);
         });
         return text;
@@ -372,24 +410,21 @@ function App() {
         if (correctNoteIndex === -1) return;
         const correctNote = notationData[notation]?.notation?.[correctNoteIndex];
         if (!correctNote) return;
-        const button = Array.from(document.querySelectorAll('#options button')).find(
-            btn => btn.textContent.trim().split(' ')[0].toLowerCase() === selectedNoteName.toLowerCase()
-        );
         if (selectedNoteName === correctNote) {
             setScore(prev => prev + 1);
-            if (button) button.classList.add('correct');
+            setFeedback({ correct: selectedNoteName, incorrect: null });
             setTimeout(() => {
-                if (button) button.classList.remove('correct');
+                setFeedback({ correct: null, incorrect: null });
                 const newNote = generateRandomNote();
                 setCurrentNote(newNote);
                 drawNote(newNote); // Draw the new note
             }, 300);
         } else {
             setScore(0);
-            if (button) button.classList.add('incorrect');
-            setTimeout(() => { if (button) button.classList.remove('incorrect'); }, 500);
+            setFeedback({ correct: null, incorrect: selectedNoteName });
+            setTimeout(() => setFeedback({ correct: null, incorrect: null }), 500);
         }
-    }, [currentNote, notation, generateRandomNote, drawNote, configuringNote]); // Added configuringNote dependency
+    }, [currentNote, notation, generateRandomNote, drawNote, configuringNote]);
 
     // --- Hotkey Handling ---
     const activeHotkeysString = useMemo(() => {
@@ -460,155 +495,143 @@ function App() {
         setTimeout(() => setGearAnimating(false), 500);
     };
 
-    // --- Render ---
+    //  --- Render ---
     return (
         <div className="App">
             <h1>{t('title')}</h1>
             <div id="score">{t('scoreLabel')} {score}</div>
 
-            {/* Main Exercise Stave */}
-            <div id="staveContainer" ref={staffRef}>
-                {!fontsReady && <p>{t('loadingFonts')}</p>}
-            </div>
-
-            {/* Answer Buttons */}
-            <div id="options">
-                {currentNotes.map(note => {
-                    const hotkey = hotkeyMappings[note];
-                    const displayHotkey = hotkey ? ` (${hotkey})` : '';
-                    return (
-                        <button key={note} onClick={() => checkAnswer(note)} disabled={!!configuringNote}>
-                            {note}{displayHotkey}
-                        </button>
-                    );
-                })}
-            </div>
-
-            {/* Range Adjuster Section */}
-            <div className="range-adjuster">
-                <label className="range-label-title">{t('adjustRange')}</label>
-                <div id="rangeStaffContainer" ref={rangeStaffRef}>
-                    {/* VexFlow draws range stave SVG here */}
-                    {/* Display loading only if fonts aren't ready */}
-                    {!fontsReady && <p>...</p>}
-                </div>
-                <div className="range-buttons">
-                    <button onClick={() => moveNote(true, 'down')} title={t('lowNoteDown')} disabled={!!configuringNote}> {t('lowNoteDown')} </button>
-                    <button onClick={() => moveNote(true, 'up')} title={t('lowNoteUp')} disabled={!!configuringNote}> {t('lowNoteUp')} </button>
-                    <span className="range-label">{lowNote} - {highNote}</span>
-                    <button onClick={() => moveNote(false, 'down')} title={t('highNoteDown')} disabled={!!configuringNote}> {t('highNoteDown')} </button>
-                    <button onClick={() => moveNote(false, 'up')} title={t('highNoteUp')} disabled={!!configuringNote}> {t('highNoteUp')} </button>
-                </div>
-            </div>
-
-            {/* Settings Toggle Button */}
-            <button
-                id="config-button"
-                className={`gear-button ${gearAnimating ? 'animating' : ''}`}
-                onClick={toggleConfigPanel}
-                title={showConfigPanel ? t('configButtonClose') : t('configButtonOpen')}
-                aria-label={showConfigPanel ? t('configButtonClose') : t('configButtonOpen')}
-                disabled={!!configuringNote}
-
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-                    <path d="M20.1 9.2214C18.29 9.2214 17.55 7.9414 18.45 6.3714C18.97 5.4614 18.66 4.3014 17.75 3.7814L16.02 2.7914C15.23 2.3214 14.21 2.6014 13.74 3.3914L13.63 3.5814C12.73 5.1514 11.25 5.1514 10.34 3.5814L10.23 3.3914C9.78 2.6014 8.76 2.3214 7.97 2.7914L6.24 3.7814C5.33 4.3014 5.02 5.4714 5.54 6.3814C6.45 7.9414 5.71 9.2214 3.9 9.2214C2.86 9.2214 2 10.0714 2 11.1214V12.8814C2 13.9214 2.85 14.7814 3.9 14.7814C5.71 14.7814 6.45 16.0614 5.54 17.6314C5.02 18.5414 5.33 19.7014 6.24 20.2214L7.97 21.2114C8.76 21.6814 9.78 21.4014 10.25 20.6114L10.36 20.4214C11.26 18.8514 12.74 18.8514 13.65 20.4214L13.76 20.6114C14.23 21.4014 15.25 21.6814 16.04 21.2114L17.77 20.2214C18.68 19.7014 18.99 18.5314 18.47 17.6314C17.56 16.0614 18.3 14.7814 20.11 14.7814C21.15 14.7814 22.01 13.9314 22.01 12.8814V11.1214C22 10.0814 21.15 9.2214 20.1 9.2214ZM12 15.2514C10.21 15.2514 8.75 13.7914 8.75 12.0014C8.75 10.2114 10.21 8.7514 12 8.7514C13.79 8.7514 15.25 10.2114 15.25 12.0014C15.25 13.7914 13.79 15.2514 12 15.2514Z" />
-                </svg>
-            </button>
-
-            {/* Configuration Panel (Conditional) */}
-            {showConfigPanel && (
-                <div className="config-panel">
-                    <h2>{t('configPanelTitle')}</h2>
-
-                    {/* Language Selector */}
-                    <div className="setting-item">
-                        <label htmlFor="notation-select">{t('languageLabel')}</label>
-                        <select
-                            id="notation-select"
-                            value={notation}
-                            onChange={e => setNotation(e.target.value)}
-                            disabled={!!configuringNote}
-                        >
-                            {Object.entries(notationData).map(([key, data]) => (
-                                // Use key for value, data.name for display
-                                <option key={key} value={key}>{data.name}</option>
-                            ))}
-                        </select>
+            {!fontsReady ? (
+                <div className="loading">{t('loadingFonts')}</div>
+            ) : (
+                <>
+                    <div id="staveContainer" ref={staffRef} />
+                    <div id="options">
+                        {currentNotes.map(note => (
+                            <AnswerButton
+                                key={note}
+                                note={note}
+                                onClick={checkAnswer}
+                                isCorrect={feedback.correct === note}
+                                isIncorrect={feedback.incorrect === note}
+                            />
+                        ))}
                     </div>
 
-                    {/* Clef Selector */}
-                    <div className="setting-item">
-                        <label htmlFor="clef-select">{t('clefLabel')}</label>
-                        <select
-                            id="clef-select"
-                            value={clef}
-                            onChange={e => setClef(e.target.value)}
-                            disabled={!!configuringNote}
-                        >
-                            {Object.keys(clefData).map((key) => (
-                                // Use key for value, translated key for display
-                                <option key={key} value={key}>{t(key)}</option>
-                            ))}
-                        </select>
+                    <div className="range-adjuster ">
+                        <span className="range-label-title">{t('adjustRange')}</span>
+                        <div id="rangeStaffContainer" ref={rangeStaffRef} />
+                        <div className="range-buttons">
+                            <RangeButton onClick={() => moveNote(true, 'down')} direction="down" type="low" t={t} />
+                            <RangeButton onClick={() => moveNote(true, 'up')} direction="up" type="low" t={t} />
+                            <RangeButton onClick={() => moveNote(false, 'down')} direction="down" type="high" t={t} />
+                            <RangeButton onClick={() => moveNote(false, 'up')} direction="up" type="high" t={t} />
+                        </div>
                     </div>
 
-                    {/* Hotkey Configuration Area */}
-                    <div className="setting-item">
-                        <h3>{t('configSubPanelHotkeys')}</h3>
-                        {configuringNote && (
-                            <p className="config-prompt">
-                                {t('configPrompt', { note: configuringNote })}
-                            </p>
-                        )}
-                        <ul className="hotkey-list">
-                            {currentNotes.map(note => (
-                                <li key={note}>
-                                    <span>{note}: {hotkeyMappings[note] || t('notDefined')}</span>
-                                    <div>
-                                        <button
-                                            onClick={() => handleConfigureClick(note)}
-                                            disabled={!!configuringNote}
-                                            className="change-button"
-                                            title={t('changeButton')}
-                                        >
-                                            {configuringNote === note ? '...' : t('changeButton')}
-                                        </button>
-                                        {hotkeyMappings[note] && (
+                    <ConfigButton
+                        onClick={toggleConfigPanel}
+                        isOpen={showConfigPanel}
+                        isAnimating={gearAnimating}
+                        t={t}
+                    />
+
+                    {showConfigPanel && (
+                        <div className="config-panel">
+                            <h2>{t('configPanelTitle')}</h2>
+
+                            <div className="setting-item">
+                                <label>{t('languageLabel')}</label>
+                                <select
+                                    value={notation}
+                                    onChange={(e) => setNotation(e.target.value)}
+                                    disabled={configuringNote !== null}
+                                >
+                                    {Object.keys(notationData).map(key => (
+                                        <option key={key} value={key}>{notationData[key].name}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="setting-item">
+                                <label>{t('clefLabel')}</label>
+                                <select
+                                    value={clef}
+                                    onChange={(e) => setClef(e.target.value)}
+                                    disabled={configuringNote !== null}
+                                >
+                                    {Object.keys(clefData).map(key => (
+                                        <option key={key} value={key}>{t(key)}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <h3>{t('configSubPanelHotkeys')}</h3>
+                            {configuringNote && (
+                                <div className="config-prompt">
+                                    {t('configPrompt', { note: configuringNote })}
+                                </div>
+                            )}
+
+                            <ul className="hotkey-list">
+                                {currentNotes.map(note => (
+                                    <li key={note}>
+                                        <span>{note}</span>
+                                        <div>
                                             <button
-                                                onClick={() => handleClearHotkey(note)}
-                                                disabled={!!configuringNote}
-                                                className="clear-button"
-                                                title={t('clearButtonTooltip')}
-                                                aria-label={t('clearButtonTooltip')}
+                                                className="change-button"
+                                                onClick={() => handleConfigureClick(note)}
+                                                disabled={configuringNote !== null && configuringNote !== note}
                                             >
-                                                &#x2716;
+                                                {hotkeyMappings[note] || t('notDefined')}
                                             </button>
-                                        )}
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-                        {configuringNote && (
-                            <button onClick={() => setConfiguringNote(null)} className="cancel-config-button">
-                                {t('cancelButton')}
-                            </button>
-                        )}
-                    </div>
+                                            <button
+                                                className="clear-button"
+                                                onClick={() => handleClearHotkey(note)}
+                                                disabled={configuringNote !== null}
+                                            >
+                                                <XIcon />
+                                            </button>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
 
-                </div> // End config-panel
+                            {configuringNote && (
+                                <button
+                                    className="cancel-config-button"
+                                    onClick={() => setConfiguringNote(null)}
+                                >
+                                    {t('cancelButton')}
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </>
             )}
 
-            {/* GitHub Link */}
-            <div className="footer-link">
-                <a href="https://github.com/henrique-coder/solfeggio-training" target="_blank" rel="noopener noreferrer" title={t('githubTooltip')} className="github-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" width="24" height="24" aria-hidden="true">
-                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path>
-                    </svg>
-                    <span className="sr-only">GitHub</span>
-                </a>
-            </div>
-        </div> // End App
+            <a
+                href="https://github.com/seu-usuario/solfeggio-training"
+                className="github-link"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={t('githubTooltip')}
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                >
+                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.8 7a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91  1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                </svg>
+            </a>
+        </div>
     );
 }
 
