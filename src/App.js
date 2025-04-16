@@ -2,6 +2,11 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Flow } from 'vexflow';
 import { useHotkeys } from 'react-hotkeys-hook';
 import './App.css';
+import { ReactComponent as SettingsIcon } from './icons/settings.svg';
+import { ReactComponent as CheckIcon } from './icons/check.svg';
+import { ReactComponent as XIcon } from './icons/x.svg';
+import { ReactComponent as ArrowUpIcon } from './icons/arrow-up.svg';
+import { ReactComponent as ArrowDownIcon } from './icons/arrow-down.svg';
 
 const VF = Flow;
 
