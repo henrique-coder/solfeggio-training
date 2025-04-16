@@ -25,6 +25,8 @@ const translations = {
   },
   githubTooltip: { Brazil: "Ver no GitHub", "United States": "View on GitHub" },
   notDefined: { Brazil: "N/D", "United States": "N/A" }, // For undefined hotkeys
+  darkTheme: { Brazil: "Tema Escuro", "United States": "Dark Theme" },
+  lightTheme: { Brazil: "Tema Claro", "United States": "Light Theme" },
 
   // Settings Panel
   configButtonOpen: { Brazil: "Configurações", "United States": "Settings" },
@@ -155,6 +157,7 @@ function App() {
   const [configuringNote, setConfiguringNote] = useState(null);
   const [showConfigPanel, setShowConfigPanel] = useState(false);
   const [gearAnimating, setGearAnimating] = useState(false);
+  const [theme, setTheme] = useState('light');
 
   const currentNotes = useMemo(() => {
     return notationData[notation]?.notation || [];
@@ -654,9 +657,25 @@ function App() {
     setTimeout(() => setGearAnimating(false), 500);
   };
 
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+  };
+
+  // Carregar tema do localStorage ao iniciar
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    }
+  }, []);
+
   // --- Render ---
   return (
-    <div className="App">
+    <div className={`App ${theme === 'dark' ? "dark-theme" : "light-theme"}`}>
       <h1>{t('title')}</h1>
       <div id="score">{t('scoreLabel')} {score}</div>
 
@@ -826,6 +845,17 @@ function App() {
           </div>
         </div>
       )}
+
+      {/* Theme Toggle Button */}
+      <button
+        id="theme-button"
+        className="theme-button"
+        onClick={toggleTheme}
+        title={theme === 'dark' ? t("lightTheme") : t("darkTheme")}
+        aria-label={theme === 'dark' ? t("lightTheme") : t("darkTheme")}
+      >
+        {theme === 'dark' ? "☀" : "☾"}
+      </button>
 
       {/* GitHub Link */}
       <div className="footer-link">
