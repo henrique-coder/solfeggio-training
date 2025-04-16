@@ -24,7 +24,9 @@ const translations = {
     "United States": "Loading fonts...",
   },
   githubTooltip: { Brazil: "Ver no GitHub", "United States": "View on GitHub" },
-  notDefined: { Brazil: "N/D", "United States": "N/A" },
+  notDefined: { Brazil: "N/D", "United States": "N/A" }, // For undefined hotkeys
+  darkTheme: { Brazil: "Tema Escuro", "United States": "Dark Theme" },
+  lightTheme: { Brazil: "Tema Claro", "United States": "Light Theme" },
 
   // Settings Panel
   configButtonOpen: { Brazil: "Configurações", "United States": "Settings" },
@@ -146,15 +148,16 @@ const getInitialHotkeyMappings = (notes) => {
 function App() {
   // --- State Variables ---
   const [score, setScore] = useState(0);
-  const [currentNote, setCurrentNote] = useState("");
-  const [notation, setNotation] = useState("United States");
-  const [clef, setClef] = useState("treble");
-  const [lowNote, setLowNote] = useState("G/3");
-  const [highNote, setHighNote] = useState("G/6");
+  const [currentNote, setCurrentNote] = useState('');
+  const [notation, setNotation] = useState('United States'); // Default language
+  const [clef, setClef] = useState('treble');
+  const [lowNote, setLowNote] = useState('G/3');
+  const [highNote, setHighNote] = useState('G/5');
   const [fontsReady, setFontsReady] = useState(false);
   const [configuringNote, setConfiguringNote] = useState(null);
   const [showConfigPanel, setShowConfigPanel] = useState(false);
   const [gearAnimating, setGearAnimating] = useState(false);
+  const [theme, setTheme] = useState('light');
 
   const currentNotes = useMemo(() => {
     return notationData[notation]?.notation || [];
@@ -173,7 +176,7 @@ function App() {
   const rangeRendererRef = useRef(null);
   const rangeContextRef = useRef(null);
   const rangeStaveRef = useRef(null);
-  const lastRangeClefRef = useRef(null);
+  const lastRangeClefRef = useRef(null); // Ref to track last initialized clef for range stave
 
   // --- Translation Function ---
   const t = useCallback(
@@ -654,13 +657,27 @@ function App() {
     setTimeout(() => setGearAnimating(false), 500);
   };
 
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+  };
+
+  // Carregar tema do localStorage ao iniciar
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    }
+  }, []);
+
   // --- Render ---
   return (
-    <div className="App">
-      <h1>{t("title")}</h1>
-      <div id="score">
-        {t("scoreLabel")} {score}
-      </div>
+    <div className={`App ${theme === 'dark' ? "dark-theme" : "light-theme"}`}>
+      <h1>{t('title')}</h1>
+      <div id="score">{t('scoreLabel')} {score}</div>
 
       {/* Main Exercise Stave */}
       <div id="staveContainer" ref={staffRef}>
@@ -828,6 +845,17 @@ function App() {
           </div>
         </div>
       )}
+
+      {/* Theme Toggle Button */}
+      <button
+        id="theme-button"
+        className="theme-button"
+        onClick={toggleTheme}
+        title={theme === 'dark' ? t("lightTheme") : t("darkTheme")}
+        aria-label={theme === 'dark' ? t("lightTheme") : t("darkTheme")}
+      >
+        {theme === 'dark' ? "☀" : "☾"}
+      </button>
 
       {/* GitHub Link */}
       <div className="footer-link">
