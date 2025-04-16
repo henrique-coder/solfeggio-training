@@ -682,10 +682,10 @@ function App() {
             <div id="options">
                 {currentNotes.map(note => {
                     const hotkey = hotkeyMappings[note];
-                    const displayHotkey = hotkey ? ` (${hotkey})` : '';
                     return (
                         <button key={note} onClick={() => checkAnswer(note)} disabled={!!configuringNote}>
-                            {note}{displayHotkey}
+                            <span className="note-text">{note}</span>
+                            {hotkey && <span className="hotkey-text">({hotkey})</span>}
                         </button>
                     );
                 })}
@@ -725,85 +725,71 @@ function App() {
 
             {/* Configuration Panel (Conditional) */}
             {showConfigPanel && (
-                <div className="config-panel">
+                <div className="settings-card">
                     <h2>{t('configPanelTitle')}</h2>
-
-                    {/* Language Selector */}
-                    <div className="setting-item">
-                        <label htmlFor="notation-select">{t('languageLabel')}</label>
+                    <div className="settings-section">
+                        <label>{t('languageLabel')}</label>
                         <select
-                            id="notation-select"
                             value={notation}
                             onChange={e => setNotation(e.target.value)}
                             disabled={!!configuringNote}
                         >
                             {Object.entries(notationData).map(([key, data]) => (
-                                // Use key for value, data.name for display
                                 <option key={key} value={key}>{data.name}</option>
                             ))}
                         </select>
                     </div>
-
-                    {/* Clef Selector */}
-                    <div className="setting-item">
-                        <label htmlFor="clef-select">{t('clefLabel')}</label>
+                    <div className="settings-section">
+                        <label>{t('clefLabel')}</label>
                         <select
-                            id="clef-select"
                             value={clef}
                             onChange={e => setClef(e.target.value)}
                             disabled={!!configuringNote}
                         >
                             {Object.keys(clefData).map((key) => (
-                                // Use key for value, translated key for display
                                 <option key={key} value={key}>{t(key)}</option>
                             ))}
                         </select>
                     </div>
-
-                    {/* Hotkey Configuration Area */}
-                    <div className="setting-item">
-                        <h3>{t('configSubPanelHotkeys')}</h3>
+                    <div className="settings-section hotkeys">
+                        <label>{t('configSubPanelHotkeys')}</label>
                         {configuringNote && (
                             <p className="config-prompt">
                                 {t('configPrompt', { note: configuringNote })}
                             </p>
                         )}
-                        <ul className="hotkey-list">
+                        <div className="hotkey-chips">
                             {currentNotes.map(note => (
-                                <li key={note}>
-                                    <span>{note}: {hotkeyMappings[note] || t('notDefined')}</span>
-                                    <div>
+                                <span key={note} className="chip">
+                                    {note}: {hotkeyMappings[note] || t('notDefined')}
+                                    <button
+                                        onClick={() => handleConfigureClick(note)}
+                                        disabled={!!configuringNote}
+                                        title={t('changeButton')}
+                                        className="edit-key-btn"
+                                    >
+                                        {configuringNote === note ? '...' : '✎'}
+                                    </button>
+                                    {hotkeyMappings[note] && (
                                         <button
-                                            onClick={() => handleConfigureClick(note)}
+                                            onClick={() => handleClearHotkey(note)}
                                             disabled={!!configuringNote}
-                                            className="change-button"
-                                            title={t('changeButton')}
+                                            title={t('clearButtonTooltip')}
+                                            aria-label={t('clearButtonTooltip')}
                                         >
-                                            {configuringNote === note ? '...' : t('changeButton')}
+                                            x
                                         </button>
-                                        {hotkeyMappings[note] && (
-                                            <button
-                                                onClick={() => handleClearHotkey(note)}
-                                                disabled={!!configuringNote}
-                                                className="clear-button"
-                                                title={t('clearButtonTooltip')}
-                                                aria-label={t('clearButtonTooltip')}
-                                            >
-                                                &#x2716;
-                                            </button>
-                                        )}
-                                    </div>
-                                </li>
+                                    )}
+                                </span>
                             ))}
-                        </ul>
+                        </div>
                         {configuringNote && (
                             <button onClick={() => setConfiguringNote(null)} className="cancel-config-button">
                                 {t('cancelButton')}
                             </button>
                         )}
                     </div>
-
-                </div> // End config-panel
+                </div>
             )}
 
             {/* GitHub Link */}
