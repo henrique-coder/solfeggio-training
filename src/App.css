@@ -25,7 +25,7 @@ body {
 /* Main heading */
 h1 {
   color: #1a365d;
-  margin-bottom: 2.2rem;
+  margin-bottom: 0.5rem;
   font-size: 2.7rem;
   font-weight: 800;
   background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
@@ -36,15 +36,28 @@ h1 {
 
 /* Score display */
 #score {
-  font-size: 2.2rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: #334155;
   margin-bottom: 2.5rem;
-  padding: 0.8rem 2rem;
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.08);
-  border: 1px solid rgba(219, 234, 254, 0.7);
+  padding: 0.5rem 0;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+  position: relative;
+}
+
+#score::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #3b82f6 0%, #93c5fd 100%);
+  border-radius: 2px;
 }
 
 /* VexFlow Stave Containers */
