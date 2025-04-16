@@ -142,14 +142,15 @@ const getInitialHotkeyMappings = (notes) => {
 };
 
 // --- Main App Component ---
+
 function App() {
   // --- State Variables ---
   const [score, setScore] = useState(0);
   const [currentNote, setCurrentNote] = useState("");
-  const [notation, setNotation] = useState("United States"); // Default language
+  const [notation, setNotation] = useState("United States");
   const [clef, setClef] = useState("treble");
   const [lowNote, setLowNote] = useState("G/3");
-  const [highNote, setHighNote] = useState("G/5");
+  const [highNote, setHighNote] = useState("G/6");
   const [fontsReady, setFontsReady] = useState(false);
   const [configuringNote, setConfiguringNote] = useState(null);
   const [showConfigPanel, setShowConfigPanel] = useState(false);
