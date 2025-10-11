@@ -2,14 +2,14 @@
 .idea
 
 # Cache
-# ...
-
-# Directories
 node_modules
 build
 
+# Directories
+# ...
+
 # Files
-.vercel
+# ...
 
 # Extensions
 *.env
