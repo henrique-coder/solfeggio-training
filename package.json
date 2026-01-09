@@ -10,7 +10,7 @@
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-hotkeys-hook": "5.1.0",
-    "react-router-dom": "7.9.4",
+    "react-router-dom": "7.12.0",
     "react-scripts": "5.0.1",
     "run": "1.5.0",
     "vexflow": "^4.2.5",
